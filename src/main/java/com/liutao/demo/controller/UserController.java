@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.liutao.demo.domain.User;
@@ -71,7 +73,7 @@ public class UserController extends BaseController {
 
 	@ResponseBody
 	@PutMapping("/user/{id}")
-	public CommonResponse editUser(@PathVariable Long id, User user) {
+	public CommonResponse editUser(@PathVariable Long id, @RequestBody User user, @RequestParam String username) {
 		log.debug("进入Edit处理方法：{}", user);
 		User one = userRepository.getOne(id);
 		if (one == null) {
