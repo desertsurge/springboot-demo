@@ -11,11 +11,14 @@
 			<div class="alert-title">添加用户</div>
 			<form id="add-form" action="#" onsubmit="return false;">
 				<input type="text" name="username" id="username" value="刘涛" />
+				<input type="text" name="flexAttrs.name" id="name" value="111" />
+				<input type="text" name="flexAttrs.age" id="age" value="222" />
+
 				<button type="submit">提交</button>
 			</form>
 		</div>
 		<div class="alert alert-warning">
-			<div class="alert-title">所有用户</div>
+			<div class="alert-title">所有用户 <a href="javascript:;" class="btn btn-danger batch-delete-btn">批量删除</a></div>
 			<ul class="list-group">
 				<li class="list-group-item" th:each="user: ${users}">
 					<span th:text="${user.username}"></span>
@@ -30,6 +33,8 @@
 			<div class="alert-title">修改用户</div>
 			<form id="edit-form" action="#" onsubmit="return false;">
 				<input type="text" name="username" id="edit-username" value="" />
+				<input type="text" name="flexAttrs.name" id="edit-name" value="111" />
+				<input type="text" name="flexAttrs.age" id="edit-age" value="222" />
 				<button type="submit">提交</button>
 			</form>
 		</div>
@@ -37,13 +42,14 @@
 	<script type="text/template" id="users-tmpl">
 <table class="table table-bordered table-striped">
 {{ _.each(users, function(n){ }}
-<tr>	
+<tr>
+	<td><input type="checkbox" name="userId" id="userId_{{=n.id}}" value="{{=n.id}}"/></td>
 	<td>{{=n.username}}</td>
 	<td>{{=n.updateTime}}</td>
 	<td>{{=n.createTime}}</td>
 	<td>
-		<a href="javascript:;" data-id="{{=n.id}}" data-name="{{=n.username}}" class="btn edit-btn">修改</a>
-		<a href="javascript:;" data-id="{{=n.id}}" class="btn delete-btn">删除</a>
+		<a href="javascript:;" data-id="{{=n.id}}" data-name="{{=n.username}}" class="btn btn-default edit-btn">修改</a>
+		<a href="javascript:;" data-id="{{=n.id}}" class="btn btn-danger delete-btn">删除</a>
 	</td>
 </tr>
 {{ }); }}

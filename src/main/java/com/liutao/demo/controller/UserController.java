@@ -1,25 +1,23 @@
 package com.liutao.demo.controller;
 
-import java.util.Date;
-import java.util.List;
-
+import com.liutao.demo.domain.User;
+import com.liutao.demo.domain.UserDTO;
+import com.liutao.demo.domain.UserVo;
+import com.liutao.demo.repository.UserRepository;
+import com.liutao.demo.util.response.CommonResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.liutao.demo.domain.User;
-import com.liutao.demo.repository.UserRepository;
-import com.liutao.demo.util.response.CommonResponse;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 public class UserController extends BaseController {
@@ -60,19 +58,21 @@ public class UserController extends BaseController {
 
 	@ResponseBody
 	@PostMapping("/user")
-	public CommonResponse addUser(User user) {
+	public CommonResponse addUser(UserVo user) {
 		log.debug("进入Post处理方法：" + user);
 		Date now = new Date();
 		user.setCreateTime(now);
 		user.setUpdateTime(now);
-		userRepository.save(user);
-		return CommonResponse.success(user);
+		User one = new User();
+		BeanUtils.copyProperties(user, one);
+		userRepository.save(one);
+		return CommonResponse.success(one);
 	}
 
 	@ResponseBody
 	@PutMapping("/user/{id}")
-	public CommonResponse editUser(@PathVariable Long id, User user) {
-		log.debug("进入Edit处理方法：{}", user);
+	public CommonResponse editUser(@PathVariable Long id, @RequestBody UserVo user) {
+		log.info("进入Edit处理方法：{}", user);
 		User one = userRepository.getOne(id);
 		if (one == null) {
 			return CommonResponse.noData();
@@ -88,6 +88,21 @@ public class UserController extends BaseController {
 	public CommonResponse deleteUser(@PathVariable Long id) {
 		log.debug("进入Delete处理方法：{}", id);
 		userRepository.delete(id);
+		return CommonResponse.success();
+	}
+
+	@ResponseBody
+	@DeleteMapping("/users")
+	public CommonResponse deleteUsers(@RequestBody UserDTO dto) {
+		log.debug("进入Delete处理方法：{}", dto);
+		log.info(dto.toString());
+		List<User> users = new ArrayList<>(dto.getIds().size());
+		for (Long id : dto.getIds()) {
+			User user = new User();
+			user.setId(id);
+			users.add(user);
+		}
+		userRepository.deleteInBatch(users);
 		return CommonResponse.success();
 	}
 

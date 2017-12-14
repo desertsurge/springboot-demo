@@ -5,7 +5,7 @@
 // The library can be used in node.js app to connect to STOMP brokers over TCP 
 // or Web sockets.
 
-// Root of the `stompjs module`
+// Root of the `stompjs com.liutao.demo.com.elead.ppm.module`
 
 var Stomp = require('./lib/stomp.js');
 var StompNode = require('./lib/stomp-node.js');

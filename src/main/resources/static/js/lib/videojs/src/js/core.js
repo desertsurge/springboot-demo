@@ -153,7 +153,7 @@ vjs.players = {};
 if (typeof define === 'function' && define['amd']) {
   define([], function(){ return videojs; });
 
-// checking that module is an object too because of umdjs/umd#35
+// checking that com.liutao.demo.com.elead.ppm.module is an object too because of umdjs/umd#35
 } else if (typeof exports === 'object' && typeof module === 'object') {
   module['exports'] = videojs;
 }

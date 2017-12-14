@@ -24,7 +24,9 @@ $(".container").on('submit', '#add-form', function() {
 		url : "/user",
 		method : "post",
 		data : {
-			username : $("#username").val()
+			username : $("#username").val(),
+			'flexAttrs[name]': $("#name").val(),
+			'flexAttrs[age]': $("#age").val()
 		},
 		success : function(resp) {
 			console.info(resp)
@@ -41,9 +43,14 @@ $(".container").on('submit', '#add-form', function() {
 	$.ajax({
 		url : "/user/" + id,
 		method : "put",
-		data : {
-			username : $("#edit-username").val()
-		},
+        contentType : "application/json;charset=utf-8",
+		data : JSON.stringify({
+			username : $("#edit-username").val(),
+			flexAttrs:{
+                name: $("#edit-name").val(),
+                age: $("#edit-age").val()
+			}
+		}),
 		success : function(resp) {
 			console.info(resp)
 			loadUsers();
@@ -59,6 +66,22 @@ $(".container").on('submit', '#add-form', function() {
 			console.info(resp)
 			loadUsers();
 		}
-	})
+	});
 	return false;
+}).on('click', '.batch-delete-btn', function () {
+    var data = [];
+    $('[name=userId]:checked').each(function (i) {
+		data.push(this.value);
+    });
+    $.ajax({
+        url : "/users",
+		data: JSON.stringify({ids: data}),
+        method : "delete",
+		contentType: 'application/json;charset=UTF-8',
+        success : function(resp) {
+            console.info(resp)
+            loadUsers();
+        }
+    });
+    return false;
 });

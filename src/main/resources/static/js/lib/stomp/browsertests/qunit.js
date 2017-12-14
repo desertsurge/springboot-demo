@@ -42,7 +42,7 @@ var QUnit = {
 		}
 	},
 	
-	// call on start of module test to prepend name to all tests
+	// call on start of com.liutao.demo.com.elead.ppm.module test to prepend name to all tests
 	module: function(name, testEnvironment) {
 		config.currentModule = name;
 
@@ -82,7 +82,7 @@ var QUnit = {
 		}
 
 		if ( config.currentModule ) {
-			name = config.currentModule + " module: " + name;
+			name = config.currentModule + " com.liutao.demo.com.elead.ppm.module: " + name;
 		}
 
 		if ( !validTest(name) ) {
@@ -517,7 +517,7 @@ function done() {
 
 	config.autorun = true;
 
-	// Log the last module results
+	// Log the last com.liutao.demo.com.elead.ppm.module results
 	if ( config.currentModule ) {
 		QUnit.moduleDone( config.currentModule, config.moduleStats.bad, config.moduleStats.all );
 	}

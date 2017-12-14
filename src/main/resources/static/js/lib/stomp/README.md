@@ -11,11 +11,11 @@ Online [documentation][doc] describes the library API (including the [annotated 
 
 ## node.js support
 
-Install the 'stompjs' module
+Install the 'stompjs' com.liutao.demo.com.elead.ppm.module
 
     $ npm install stompjs
 
-In the node.js app, require the module with:
+In the node.js app, require the com.liutao.demo.com.elead.ppm.module with:
 
     var Stomp = require('stompjs');
 
