@@ -6,8 +6,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity(name="user")
-public class User extends BaseBean{
-
+public class User extends BaseBean {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
