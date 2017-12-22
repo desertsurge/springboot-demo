@@ -2,13 +2,6 @@ logging:
   level:
     com:
       liutao: debug 
-    org:
-      hibernate:
-        type:
-          descriptor:
-            sql:
-              BasicBinder: debug
-              BasicExtractor: debug 
     root: info
 server:
   port: 9999
@@ -42,10 +35,5 @@ spring:
     #useGlobalDataSourceStat: true
   jackson:
     time-zone: GMT+8
-  jpa:
-    generate-ddl: true 
-    hibernate:
-      ddl-auto: update 
-    show-sql: true 
   thymeleaf:
     cache: false

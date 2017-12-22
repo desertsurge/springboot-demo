@@ -12,12 +12,12 @@ public interface UserMapperService {
 
 	List<User> findAll(Sort pageable);
 
-	void save(User one);
+	Integer save(User one);
 
-	User saveAndFlush(User one);
+	Integer updateUserById(User one);
 
-	void delete(Long id);
+	Integer delete(Long id);
 
-	void deleteInBatch(List<User> users);
+	Integer deleteInBatch(List<Long> idList);
 
 }

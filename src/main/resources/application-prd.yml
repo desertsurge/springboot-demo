@@ -2,13 +2,6 @@ logging:
   level:
     com:
       liutao: info
-    org:
-      hibernate:
-        type:
-          descriptor:
-            sql:
-              BasicBinder: info
-              BasicExtractor: info
     root: info
 server:
   port: 88
@@ -25,10 +18,5 @@ spring:
     username: root
   jackson:
     time-zone: GMT+8
-  jpa:
-    generate-ddl: false
-    hibernate:
-      ddl-auto: update
-    show-sql: false
   thymeleaf:
     cache: true

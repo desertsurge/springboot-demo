@@ -1,22 +1,42 @@
 package com.liutao.demo.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import javax.persistence.*;
 import java.util.Date;
 
-@Entity(name="user")
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.liutao.demo.common.BaseBean;
+
+@Entity(name = "user")
+@TableName("user")
 public class User extends BaseBean {
-	
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@TableId(type = IdType.ID_WORKER)
 	Long id;
+
 	@Column
+	@TableField
 	String username;
+
 	@Column
+	@TableField
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	Date createTime;
+
 	@Column
+	@TableField
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	Date updateTime;
 
@@ -50,12 +70,6 @@ public class User extends BaseBean {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
-	}
-
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", createTime=" + createTime + ", updateTime=" + updateTime
-				+ "]";
 	}
 
 }

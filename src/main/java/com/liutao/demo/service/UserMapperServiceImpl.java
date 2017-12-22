@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.liutao.demo.domain.User;
 import com.liutao.demo.repository.UserMapper;
 
@@ -23,33 +24,43 @@ public class UserMapperServiceImpl implements UserMapperService {
 	@Override
 	@Cacheable(key="#id")
 	public User getOne(Long id) {
-		return userMapper.getOne(id);
+		User user = new User();
+		user.setId(id);
+		return userMapper.selectOne(user);
+//		return userMapper.getOne(id);
 	}
 
 	@Override
 	public List<User> findAll(Sort pageable) {
-		return userMapper.findAll(pageable);
+		EntityWrapper<User> wrapper = new EntityWrapper<User>();
+		wrapper.orderBy("create_time", false);
+		return userMapper.selectList(wrapper);
+//		return userMapper.findAll(pageable);
 	}
 
 	@Override
-	public void save(User one) {
-		userMapper.save(one);		
+	public Integer save(User one) {
+		return userMapper.insert(one);
+//		userMapper.save(one);		
 	}
 
 	@Override
 	@Cacheable(key="#one.id")
-	public User saveAndFlush(User one) {
-		return userMapper.saveAndFlush(one);
+	public Integer updateUserById(User one) {
+		return userMapper.updateById(one);
+//		return userMapper.saveAndFlush(one);
 	}
 
 	@Override
 	@CacheEvict(key="#id")
-	public void delete(Long id) {
-		userMapper.delete(id);
+	public Integer delete(Long id) {
+		return userMapper.deleteById(id);
+//		userMapper.delete(id);
 	}
 
 	@Override
-	public void deleteInBatch(List<User> users) {
-		userMapper.deleteInBatch(users);
+	public Integer deleteInBatch(List<Long> idList) {
+		return userMapper.deleteBatchIds(idList);
+//		userMapper.deleteInBatch(users);
 	}
 }

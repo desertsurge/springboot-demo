@@ -1,6 +1,5 @@
 package com.liutao.demo.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.liutao.demo.domain.User;
 import com.liutao.demo.domain.UserDTO;
 import com.liutao.demo.domain.UserVo;
-import com.liutao.demo.service.UserService;
+import com.liutao.demo.service.UserMapperService;
 import com.liutao.demo.util.response.CommonResponse;
 
 @Controller
@@ -32,13 +31,13 @@ public class UserController extends BaseController {
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
-	private UserService userService;
+	private UserMapperService userMapperService;
 
 	@GetMapping(value = {"/", "/user"})
 	public String toPut(Model model) {
 		log.debug("进入put页面");
 		Sort pageable = new Sort("id");
-		List<User> list = userService.findAll(pageable);
+		List<User> list = userMapperService.findAll(pageable);
 		model.addAttribute("users", list);
 		return "form/index";
 	}
@@ -47,7 +46,7 @@ public class UserController extends BaseController {
 	@GetMapping("/user/{id}")
 	public CommonResponse getUser(@PathVariable Long id) {
 		log.debug("获取用户：{}", id);
-		User user = userService.getOne(id);
+		User user = userMapperService.getOne(id);
 		if (user == null) {
 			return CommonResponse.noData();
 		}
@@ -59,7 +58,7 @@ public class UserController extends BaseController {
 	public CommonResponse getUsers() {
 		log.debug("获取全部用户");
 		Sort pageable = new Sort(Direction.DESC, "id");
-		List<User> list = userService.findAll(pageable);
+		List<User> list = userMapperService.findAll(pageable);
 		return CommonResponse.success(list);
 	}
 
@@ -72,30 +71,27 @@ public class UserController extends BaseController {
 		user.setUpdateTime(now);
 		User one = new User();
 		BeanUtils.copyProperties(user, one);
-		userService.save(one);
-		return CommonResponse.success(one);
+		return CommonResponse.success(userMapperService.save(one));
 	}
 
 	@ResponseBody
 	@PutMapping("/user/{id}")
 	public CommonResponse editUser(@PathVariable Long id, @RequestBody UserVo user) {
 		log.info("进入Edit处理方法：{}", user);
-		User one = userService.getOne(id);
+		User one = userMapperService.getOne(id);
 		if (one == null) {
 			return CommonResponse.noData();
 		}
 		one.setUsername(user.getUsername());
 		one.setUpdateTime(new Date());
-		User user1 = userService.saveAndFlush(one);
-		return CommonResponse.success(user1);
+		return CommonResponse.success(userMapperService.updateUserById(one));
 	}
 
 	@ResponseBody
 	@DeleteMapping("/user/{id}")
 	public CommonResponse deleteUser(@PathVariable Long id) {
 		log.debug("进入Delete处理方法：{}", id);
-		userService.delete(id);
-		return CommonResponse.success();
+		return CommonResponse.success(userMapperService.delete(id));
 	}
 
 	@ResponseBody
@@ -103,14 +99,16 @@ public class UserController extends BaseController {
 	public CommonResponse deleteUsers(@RequestBody UserDTO dto) {
 		log.debug("进入Delete处理方法：{}", dto);
 		log.info(dto.toString());
-		List<User> users = new ArrayList<>(dto.getIds().size());
+		if(dto.getIds() == null || dto.getIds().isEmpty()) {
+			return CommonResponse.success();
+		}
+		/*List<User> users = new ArrayList<>(dto.getIds().size());
 		for (Long id : dto.getIds()) {
 			User user = new User();
 			user.setId(id);
 			users.add(user);
-		}
-		userService.deleteInBatch(users);
-		return CommonResponse.success();
+		}*/
+		return CommonResponse.success(userMapperService.deleteInBatch(dto.getIds()));
 	}
 
 }
