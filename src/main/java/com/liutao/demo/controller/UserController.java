@@ -1,5 +1,6 @@
 package com.liutao.demo.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +39,8 @@ public class UserController extends BaseController {
 		log.debug("进入put页面");
 		Sort pageable = new Sort("id");
 		List<User> list = userMapperService.findAll(pageable);
-		model.addAttribute("users", list);
+		List<User> result = convertUserList(list);
+		model.addAttribute("users", result);
 		return "form/index";
 	}
 
@@ -59,7 +61,17 @@ public class UserController extends BaseController {
 		log.debug("获取全部用户");
 		Sort pageable = new Sort(Direction.DESC, "id");
 		List<User> list = userMapperService.findAll(pageable);
-		return CommonResponse.success(list);
+		List<User> result = convertUserList(list);
+		return CommonResponse.success(result);
+	}
+
+	private List<User> convertUserList(List<User> list) {
+		List<User> result = new ArrayList<>(list.size());
+		for (User user : list) {
+			User u = userMapperService.getOne(user.getId());
+			result.add(u);
+		}
+		return result;
 	}
 
 	@ResponseBody

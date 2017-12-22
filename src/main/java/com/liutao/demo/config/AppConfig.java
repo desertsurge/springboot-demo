@@ -13,10 +13,14 @@ public class AppConfig {
 
 	@Bean
 	public HttpMessageConverters fastjsonHttpMessageConverter() {
-		System.out.println("===============");
 		FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
 		FastJsonConfig fastJsonConfig = new FastJsonConfig();
-		fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat, SerializerFeature.WriteNullStringAsEmpty);
+		fastJsonConfig.setSerializerFeatures(
+				SerializerFeature.PrettyFormat, 
+				SerializerFeature.WriteNullStringAsEmpty,
+				SerializerFeature.WriteDateUseDateFormat,
+				SerializerFeature.UseISO8601DateFormat
+			);
 		converter.setFastJsonConfig(fastJsonConfig);
 		return new HttpMessageConverters(converter);
 	}
