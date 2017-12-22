@@ -23,8 +23,8 @@
 				<li class="list-group-item" th:each="user: ${users}">
 					<span th:text="${user.username}"></span>
 					<a href="javascript:;" class="btn btn-link" th:data-id="${user.id}" th:text="*{user.username}"> </a>
-					<span th:text="${user.createTime}"></span>  --> 
-					<span th:text="${user.updateTime}"></span>
+					<span th:text="${#dates.format(user.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>  --> 
+					<span th:text="${#dates.format(user.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
 				</li>
 			</ul>
 			<div id="all-users"></div>
