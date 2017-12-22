@@ -110,7 +110,6 @@ public class UserController extends BaseController {
 	@DeleteMapping("/users")
 	public CommonResponse deleteUsers(@RequestBody UserDTO dto) {
 		log.debug("进入Delete处理方法：{}", dto);
-		log.info(dto.toString());
 		if(dto.getIds() == null || dto.getIds().isEmpty()) {
 			return CommonResponse.success();
 		}

@@ -19,7 +19,8 @@ public class AppConfig {
 				SerializerFeature.PrettyFormat, 
 				SerializerFeature.WriteNullStringAsEmpty,
 				SerializerFeature.WriteDateUseDateFormat,
-				SerializerFeature.UseISO8601DateFormat
+				SerializerFeature.UseISO8601DateFormat,
+				SerializerFeature.BrowserCompatible
 			);
 		converter.setFastJsonConfig(fastJsonConfig);
 		return new HttpMessageConverters(converter);

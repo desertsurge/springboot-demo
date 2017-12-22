@@ -1,20 +1,17 @@
 package com.liutao.demo.common.cache;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.BoundSetOperations;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.stereotype.Component;
+
+import com.liutao.demo.common.BaseBean;
+import com.liutao.demo.controller.UserController;
 
 /**
  * redis数据操作工具
@@ -22,178 +19,84 @@ import org.springframework.stereotype.Component;
  * @param <T>
  */
 @Component("redisCacheUtil")
-public class RedisCacheUtil<T> {
+public class RedisCacheUtil<T extends BaseBean> {
+	private static final Logger log = LoggerFactory.getLogger(RedisCacheUtil.class);
 
 	@Autowired
-	@Qualifier("redisTemplate")
-	public RedisTemplate redisTemplate;
+	RedisCacheManager redisCacheManager;
 
 	/**
-	 * 缓存基本对象
+	 * 获取缓存
 	 * 
-	 * @param key
-	 * @param value
-	 * @param <T>
+	 * @param name
 	 * @return
 	 */
-	public <T> ValueOperations<String, T> cacheObject(String key, T value) {
-		ValueOperations<String, T> operations = redisTemplate.opsForValue();
-		operations.set(key, value);
-		return operations;
+	public Cache getCache(String name) {
+		log.debug(name);
+		return redisCacheManager.getCache(name);
 	}
 
-	/**
-	 * 获取基本缓存对象
-	 * 
-	 * @param key
-	 * @param <T>
-	 * @return
-	 */
-	public <T> T getObject(String key) {
-		ValueOperations<String, T> operations = redisTemplate.opsForValue();
-		return operations.get(key);
+	public Collection<String> getCacheNames() {
+		log.debug("getCacheNames");
+		return redisCacheManager.getCacheNames();
 	}
 
-	/**
-	 * 缓存list
-	 * 
-	 * @param key
-	 * @param list
-	 * @param <T>
-	 * @return
-	 */
-	public <T> ListOperations<String, T> cacheList(String key, List<T> list) {
-
-		ListOperations<String, T> listOperations = redisTemplate.opsForList();
-		if (null != list && !list.isEmpty()) {
-			int len = list.size();
-			for (int i = 0; i < len; i++) {
-				T t = list.get(i);
-				listOperations.rightPush(key, t);
-			}
+	@SuppressWarnings("unchecked")
+	public T get(String name, Object key) {
+		log.debug(name, key);
+		Cache cache = getCache(name);
+		if (cache == null) {
+			return null;
 		}
-		return listOperations;
+		ValueWrapper vw = getCache(name).get(key);
+		return vw == null ? null : (T) vw.get();
 	}
 
-	/**
-	 * 获取list数据
-	 * 
-	 * @param key
-	 * @param <T>
-	 * @return
-	 */
-	public synchronized <T> List<T> getList(String key) {
-
-		List<T> dataList = new ArrayList<>();
-		ListOperations<String, T> listOperations = redisTemplate.opsForList();
-		long len = listOperations.size(key);
-		for (int i = 0; i < len; i++) {
-			dataList.add(listOperations.leftPop(key));
+	public void put(String name, Object key, Object value) {
+		log.debug(name, key, value);
+		Cache cache = getCache(name);
+		if (cache == null) {
+			return;
 		}
-		return dataList;
+		cache.put(key, value);
 	}
 
-	/**
-	 * 缓存set
-	 * 
-	 * @param key
-	 * @param dataSet
-	 * @param <T>
-	 * @return
-	 */
-	public <T> BoundSetOperations<String, T> setCacheSet(String key, Set<T> dataSet) {
-
-		BoundSetOperations<String, T> setOperations = redisTemplate.boundSetOps(key);
-		Iterator<T> it = dataSet.iterator();
-		while (it.hasNext()) {
-			setOperations.add(it.next());
+	public ValueWrapper putIfAbsent(String name, Object key, Object value) {
+		log.debug(name, key, value);
+		Cache cache = getCache(name);
+		if (cache == null) {
+			return null;
 		}
-		return setOperations;
+		return cache.putIfAbsent(key, value);
 	}
 
-	/**
-	 * 获取set数据
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public Set<T> getSet(String key) {
-
-		Set<T> dataSet = new HashSet<>();
-		BoundSetOperations<String, T> operation = redisTemplate.boundSetOps(key);
-		Long size = operation.size();
-		for (int i = 0; i < size; i++) {
-			dataSet.add(operation.pop());
+	public void evict(String name, Object key) {
+		log.debug(name, key);
+		Cache cache = getCache(name);
+		if (cache == null) {
+			return;
 		}
-		return dataSet;
+		cache.evict(key);
 	}
 
-	/**
-	 * 缓存Map
-	 * 
-	 * @param key
-	 * @param dataMap
-	 * @return
-	 */
-	public <T> HashOperations<String, String, T> setCacheMap(String key, Map<String, T> dataMap) {
-
-		HashOperations hashOperations = redisTemplate.opsForHash();
-		if (null != dataMap) {
-			for (Map.Entry<String, T> entry : dataMap.entrySet()) {
-				/*
-				 * System.out.println("Key = " + entry.getKey() + ", Value = " +
-				 * entry.getValue());
-				 */
-				hashOperations.put(key, entry.getKey(), entry.getValue());
-			}
+	public void evictBatch(String name, Object... keys) {
+		log.debug(name, keys);
+		Cache cache = getCache(name);
+		if (cache == null) {
+			return;
 		}
-		return hashOperations;
-	}
-
-	/**
-	 * 获得缓存的Map
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public <T> Map<String, T> getCacheMap(String key) {
-		return redisTemplate.opsForHash().entries(key);
-	}
-
-	/**
-	 * 缓存Map
-	 * 
-	 * @param key
-	 * @param dataMap
-	 * @return
-	 */
-	public <T> HashOperations<String, Integer, T> setCacheIntegerMap(String key, Map<Integer, T> dataMap) {
-		HashOperations hashOperations = redisTemplate.opsForHash();
-		if (null != dataMap) {
-			for (Map.Entry<Integer, T> entry : dataMap.entrySet()) {
-				/*
-				 * System.out.println("Key = " + entry.getKey() + ", Value = " +
-				 * entry.getValue());
-				 */
-				hashOperations.put(key, entry.getKey(), entry.getValue());
-			}
+		for (int i = 0; i < keys.length; i++) {
+			cache.evict(keys[i]);
 		}
-		return hashOperations;
 	}
 
-	/**
-	 * 获得缓存的Map
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public <T> Map<Integer, T> getCacheIntegerMap(String key) {
-		Map<Integer, T> map = redisTemplate.opsForHash().entries(key);
-		return map;
-	}
-	
-	public void evict(String key) {
-		
+	public void clear(String name) {
+		log.debug(name);
+		Cache cache = getCache(name);
+		if (cache == null) {
+			return;
+		}
+		cache.clear();
 	}
 
 }

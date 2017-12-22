@@ -13,6 +13,7 @@ import com.liutao.demo.common.BaseBean;
 public class User extends BaseBean {
 
 	private static final long serialVersionUID = 1L;
+	public static final String CACHE_NAME = "USER";
 
 	@TableId(type = IdType.ID_WORKER)
 	Long id;
