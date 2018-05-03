@@ -1,11 +1,22 @@
 package com.liutao.demo.repository;
 
-import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
 
-import com.liutao.demo.common.SuperMapper;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.liutao.demo.domain.User;
 
-@Mapper
-public interface UserMapper extends SuperMapper<User>{
+public interface UserMapper {
+
+	User selectOne(User user);
+
+	List<User> selectList(EntityWrapper<User> wrapper);
+
+	Integer insert(User one);
+
+	Integer deleteById(Long id);
+
+	Integer updateById(User one);
+
+	Integer deleteBatchIds(List<Long> idList);
 
 }

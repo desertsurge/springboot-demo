@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.springframework.data.domain.Sort;
 
+import com.baomidou.mybatisplus.service.IService;
 import com.liutao.demo.domain.User;
 
-public interface UserMapperService {
+public interface UserMapperService extends IService<User>{
 
 	User getOne(Long id);
 

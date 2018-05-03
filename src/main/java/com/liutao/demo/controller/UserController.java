@@ -24,7 +24,7 @@ import com.liutao.demo.domain.User;
 import com.liutao.demo.domain.UserDTO;
 import com.liutao.demo.domain.UserVo;
 import com.liutao.demo.service.UserMapperService;
-import com.liutao.demo.util.response.CommonResponse;
+import com.liutao.demo.util.response.RespBody;
 
 @Controller
 public class UserController extends BaseController {
@@ -46,23 +46,23 @@ public class UserController extends BaseController {
 
 	@ResponseBody
 	@GetMapping("/user/{id}")
-	public CommonResponse getUser(@PathVariable Long id) {
+	public RespBody getUser(@PathVariable Long id) {
 		log.debug("获取用户：{}", id);
 		User user = userMapperService.getOne(id);
 		if (user == null) {
-			return CommonResponse.noData();
+			return RespBody.noData();
 		}
-		return CommonResponse.success(user);
+		return RespBody.success(user);
 	}
 
 	@ResponseBody
 	@GetMapping("/users")
-	public CommonResponse getUsers() {
+	public RespBody getUsers() {
 		log.debug("获取全部用户");
 		Sort pageable = new Sort(Direction.DESC, "id");
 		List<User> list = userMapperService.findAll(pageable);
 		List<User> result = convertUserList(list);
-		return CommonResponse.success(result);
+		return RespBody.success(result);
 	}
 
 	private List<User> convertUserList(List<User> list) {
@@ -76,42 +76,42 @@ public class UserController extends BaseController {
 
 	@ResponseBody
 	@PostMapping("/user")
-	public CommonResponse addUser(UserVo user) {
+	public RespBody addUser(UserVo user) {
 		log.debug("进入Post处理方法：" + user);
 		Date now = new Date();
 		user.setCreateTime(now);
 		user.setUpdateTime(now);
 		User one = new User();
 		BeanUtils.copyProperties(user, one);
-		return CommonResponse.success(userMapperService.save(one));
+		return RespBody.success(userMapperService.save(one));
 	}
 
 	@ResponseBody
 	@PutMapping("/user/{id}")
-	public CommonResponse editUser(@PathVariable Long id, @RequestBody UserVo user) {
+	public RespBody editUser(@PathVariable Long id, @RequestBody UserVo user) {
 		log.info("进入Edit处理方法：{}", user);
 		User one = userMapperService.getOne(id);
 		if (one == null) {
-			return CommonResponse.noData();
+			return RespBody.noData();
 		}
 		one.setUsername(user.getUsername());
 		one.setUpdateTime(new Date());
-		return CommonResponse.success(userMapperService.updateUserById(one));
+		return RespBody.success(userMapperService.updateUserById(one));
 	}
 
 	@ResponseBody
 	@DeleteMapping("/user/{id}")
-	public CommonResponse deleteUser(@PathVariable Long id) {
+	public RespBody deleteUser(@PathVariable Long id) {
 		log.debug("进入Delete处理方法：{}", id);
-		return CommonResponse.success(userMapperService.delete(id));
+		return RespBody.success(userMapperService.delete(id));
 	}
 
 	@ResponseBody
 	@DeleteMapping("/users")
-	public CommonResponse deleteUsers(@RequestBody UserDTO dto) {
+	public RespBody deleteUsers(@RequestBody UserDTO dto) {
 		log.debug("进入Delete处理方法：{}", dto);
 		if(dto.getIds() == null || dto.getIds().isEmpty()) {
-			return CommonResponse.success();
+			return RespBody.success();
 		}
 		/*List<User> users = new ArrayList<>(dto.getIds().size());
 		for (Long id : dto.getIds()) {
@@ -119,7 +119,7 @@ public class UserController extends BaseController {
 			user.setId(id);
 			users.add(user);
 		}*/
-		return CommonResponse.success(userMapperService.deleteInBatch(dto.getIds()));
+		return RespBody.success(userMapperService.deleteInBatch(dto.getIds()));
 	}
 
 }
